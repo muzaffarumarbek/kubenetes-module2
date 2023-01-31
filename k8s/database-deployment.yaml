@@ -1,0 +1,109 @@
+#database should be stateful, so that we need to attach volume
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-module2
+#user database
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: k8s-module2
+  name: user-database-service
+spec:
+  selector:
+    db: user-database-pod
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-database-pod
+  namespace: k8s-module2
+spec:
+  selector:
+    matchLabels:
+      db: user-database-pod
+  template:
+    metadata:
+      labels:
+        db: user-database-pod
+    spec:
+      containers:
+        - image: postgres:13.2-alpine
+          name: user-db
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: userDb
+            - name: POSTGRES_DB_SCHEMA
+              value: "public"
+
+
+#post database
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: k8s-module2
+  name: post-database-service
+spec:
+  selector:
+    db: post-database-pod
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-database-pod
+  namespace: k8s-module2
+spec:
+  selector:
+    matchLabels:
+      db: post-database-pod
+  template:
+    metadata:
+      labels:
+        db: post-database-pod
+    spec:
+      containers:
+        - image: postgres:13.2-alpine
+          name: post-db
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: postDb
+            - name: POSTGRES_DB_SCHEMA
+              value: "public"
+
+

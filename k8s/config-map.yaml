@@ -1,0 +1,10 @@
+#user config map
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: k8s-module2
+  name: app-config-map
+  labels:
+    app: app-config-map
+data:
+  profile: "dev"

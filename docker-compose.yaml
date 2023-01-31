@@ -1,0 +1,59 @@
+version: '3'
+services:
+  user_service:
+    depends_on: [ user_database ]
+    image: com.epam/user-service
+    container_name: user-service
+    networks:
+      - service-net
+    ports:
+      - "9000:9000"
+
+    environment:
+      - PROFILE=${PROFILE}
+      - DB_URL=${USER_DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+  post_service:
+    depends_on: [ post_database ]
+    image: com.epam/post-service
+    container_name: post-service
+    networks:
+      - service-net
+    ports:
+      - "9001:9001"
+    environment:
+      - PROFILE=${PROFILE}
+      - DB_URL=${POST_DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+  user_database:
+    image: user_database
+    container_name: user-db
+    restart: unless-stopped
+    networks:
+      - service-net
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${USER_DB_NAME}
+      - POSTGRES_DB_SCHEMA=public
+    volumes:
+      - ${USER_DB_DATA}:/var/lib/postgresql/data
+      - ${USER_DB_BACKUP}:/backup
+  post_database:
+    image: postgres:13.2-alpine
+    container_name: post-db
+    restart: unless-stopped
+    networks:
+      - service-net
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${POST_DB_NAME}
+      - POSTGRES_DB_SCHEMA=public
+    volumes:
+      - ${POST_DB_DATA}:/var/lib/postgresql/data
+      - ${POST_DB_BACKUP}:/backup
+networks:
+  service-net:
