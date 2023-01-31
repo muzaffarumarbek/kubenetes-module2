@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepo userRepo;
 
-    public UserDto getOneUser(Long id) {
+    public UserDto getUser(Long id) {
         return userRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"))
                 .toDto();

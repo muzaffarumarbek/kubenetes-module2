@@ -21,19 +21,19 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getOneUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getOneUser(id));
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUser(id));
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> getOneUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> getUser(@Valid @RequestBody UserDto userDto) {
         if (userDto.id() != null) throw new RuntimeException("Id should be  null");
         return ResponseEntity.ok(userService.createOrUpdateUser(userDto));
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> getOneUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.createOrUpdateUser(
                 new UserDto(id, userDto.username(), userDto.amountOfPosts())
         ));
